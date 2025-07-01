@@ -1,20 +1,60 @@
-import Image from "next/image";
+'use client';
+import Image from 'next/image';
+import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <h1 className="text-4xl font-bold">Welcome to WorkoutApp</h1>
+        <p className="text-xl">Please sign in to continue</p>
+        <div className="flex gap-4">
+          <Link
+            href="/login"
+            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Login
+          </Link>
+          <Link
+            href="/signup"
+            className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          >
+            Sign Up
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
+        <div className="flex flex-col items-center gap-4">
+          <h1 className="text-4xl font-bold">
+            Welcome, {session.user?.name || session.user?.username}!
+          </h1>
+          <p className="text-xl">You are now logged in to WorkoutApp</p>
+          <button
+            onClick={() => signOut()}
+            className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+          >
+            Sign Out
+          </button>
+        </div>
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
+            Get started by editing{' '}
             <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
               app/page.tsx
             </code>
